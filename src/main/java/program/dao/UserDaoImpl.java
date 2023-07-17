@@ -1,63 +1,76 @@
 package program.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import program.model.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 
 @Repository
 public class UserDaoImpl implements UserDao{
-    private SessionFactory sessionFactory;
-
+    private EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
 
     @Override
-    public List allUsers() {
-        Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from User").list();
+    public List<User> allUsers() {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        TypedQuery<User> query = entityManager.createQuery("from User", User.class);
+        List<User> users = query.getResultList();
+        entityManager.close();
+        return users;
     }
 
     @Override
     public void add(User user) {
-        Session session = sessionFactory.getCurrentSession();
-        session.save(user);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.persist(user);
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
-
 
     @Override
     public void delete(User user) {
-        Session session = sessionFactory.getCurrentSession();
-        session.delete(user);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.remove(entityManager.contains(user) ? user : entityManager.merge(user));
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
     @Override
     public void edit(User user) {
-        Session session = sessionFactory.getCurrentSession();
-        session.update(user);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.merge(user);
+        entityManager.getTransaction().commit();
+        entityManager.close();
     }
 
     @Override
     public User getById(int id) {
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(User.class, id);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        User user = entityManager.find(User.class, id);
+        entityManager.close();
+        return user;
     }
 
     @Override
     public User getRandom() {
-        Session session = sessionFactory.getCurrentSession();
-        Query<User> query = session.createQuery("FROM User", User.class);
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        TypedQuery<User> query = entityManager.createQuery("FROM User", User.class);
         List<User> userList = query.getResultList();
         int randomIndex = (int) (Math.random() * userList.size());
         User randomUser = userList.get(randomIndex);
+        entityManager.close();
         return randomUser;
     }
 }
