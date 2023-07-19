@@ -37,7 +37,7 @@ public class UserController {
         return modelAndView;
     }
 
-    @PostMapping("/edit")
+    @PatchMapping("/edit")
     private ModelAndView editUser(@ModelAttribute("user") User user) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/");
@@ -59,7 +59,7 @@ public class UserController {
         modelAndView.setViewName("redirect:/");
         return modelAndView;
     }
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     private ModelAndView deleteUser(@PathVariable("id") int id) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/");

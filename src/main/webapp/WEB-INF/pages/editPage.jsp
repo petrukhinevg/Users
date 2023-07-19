@@ -30,6 +30,7 @@
         <input type="submit" value="Добавить юзера">
     </c:if>
     <c:if test="${!empty user.name}">
+        <input type="hidden" name="_method" value="patch">
         <input type="submit" value="Редактировать юзера">
     </c:if>
 </form>

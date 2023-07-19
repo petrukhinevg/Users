@@ -22,14 +22,27 @@
             <td>${user.age}</td>
             <td>${user.country}</td>
             <td>
-                <a href="/edit/${user.id}">edit</a>
-                <a href="/delete/${user.id}">delete</a>
+                <table>
+                    <tr>
+                        <td>
+                            <form action="/edit/${user.id}" method="get">
+                                <button type="submit">edit</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/delete/${user.id}" method="post">
+                                <input type="hidden" name="_method" value="delete">
+                                <button type="submit" onclick="return confirm('Точно???')">delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </c:forEach>
 </table>
 
-<h2>Add</h2>
+<h3>Add</h3>
 <c:url value="/add" var="add"/>
 <a href="${add}">Add new user</a>
 </body>
